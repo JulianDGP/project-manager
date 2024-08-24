@@ -21,6 +21,21 @@
               <p><strong>Estado:</strong> {{ project.active }}</p>
             </v-col>
           </v-row>
+
+
+          <!-- Mostrar estadísticas de las tareas -->
+          <v-row v-if="project.tasks && project.tasks.length">
+            <v-col cols="12">
+              <p><strong>Estadísticas de Tareas:</strong></p>
+              <ul>
+                <li>Pendientes: {{ taskStatistics.pending }}</li>
+                <li>En Progreso: {{ taskStatistics.inProgress }}</li>
+                <li>Completadas: {{ taskStatistics.completed }}</li>
+              </ul>
+            </v-col>
+          </v-row>
+
+
           <!-- Botón para abrir el modal de creación de tareas -->
           <v-btn color="primary" @click="openCreateTaskModal">Crear Tarea</v-btn>
 
@@ -69,6 +84,23 @@ export default {
   components: {
     CreateTaskModal
   },
+  computed:{
+    taskStatistics(){
+      const stats ={
+        pending: 0,
+        inProgress: 0,
+        completed: 0
+      };
+      if(this.project.tasks){
+        this.project.tasks.forEach(task =>{
+          if(task.status === 'Pendiente') stats.pending++;
+          if(task.status === 'En Progreso') stats.inProgress++;
+          if(task.status === 'Completada') stats.completed++;
+        });
+      }
+      return stats;
+    }
+  },
   methods: {
     open() {
       this.dialog = true;
@@ -82,8 +114,8 @@ export default {
         this.$refs.createTaskModal.open(); // Abrir el modal de creación de tareas
       }
     },
-    addTask(newTask){
-      if(!this.project.tasks){ // Método para añadir una nueva tarea al proyecto
+    addTask(newTask) {
+      if (!this.project.tasks) { // Método para añadir una nueva tarea al proyecto
         this.project.tasks = [];
       }
       newTask.id = this.project.tasks.length + 1; // Asignar un ID único a la tarea
