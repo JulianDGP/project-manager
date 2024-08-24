@@ -20,6 +20,8 @@
     <CreateProjectModal ref="editProjectModal" v-if="selectedProject" :project="selectedProject"
       @project-saved="updateProject" />
 
+    <!-- Modal Detalles del Proyecto -->
+    <ProjectDetailsModal ref="projectDetailsModal" :project="selectedProject" />
 
     <!-- Modal de Confirmación para Eliminar Proyecto -->
     <v-dialog v-model="deleteDialog" max-width="500">
@@ -37,7 +39,7 @@
     <!-- Lista de proyectos -->
     <v-row v-for="project in projects" :key="project.id">
       <v-col>
-        <v-card elevation="5">
+        <v-card @click="openProjectDetails(project)" elevation="5">
           <!-- Título del proyecto -->
           <v-card-title>{{ project.name }}</v-card-title>
           <!-- Subtítulo mostrando el estado del proyecto -->
@@ -49,11 +51,11 @@
             {{ project.description }}
           </v-card-text>
           <!-- Botón de edición -->
-          <v-btn icon @click="openEditProjectModal(project)">
+          <v-btn icon @click.stop="openEditProjectModal(project)">
             <v-icon>mdi-pencil</v-icon>
           </v-btn>
           <!-- Botón de eliminación -->
-          <v-btn icon @click="openDeleteDialog(project)">
+          <v-btn icon @click.stop="openDeleteDialog(project)">
             <v-icon color="red">mdi-delete</v-icon>
           </v-btn>
         </v-card>
@@ -63,14 +65,15 @@
 </template>
 
 <script>
-// Importar modal de crear proyecto
+// Importar modal de crear proyecto y modal detalles del proyecto
 import CreateProjectModal from '../components/CreateProjectModal.vue';
-
+import ProjectDetailsModal from '../components/ProjectDetailsModal.vue';
 
 export default {
   name: 'ProjectList',
   components: {
-    CreateProjectModal
+    CreateProjectModal,
+    ProjectDetailsModal
   },
   data() {
     return {
@@ -93,11 +96,9 @@ export default {
       this.$refs.createProjectModal.open();
     },
     addProject(newProject) {// Método para agregar un nuevo proyecto a la lista
-
       newProject.id = this.projects.length + 1;// Asignar un ID único al nuevo proyecto
       this.projects.push(newProject); // Añadir el nuevo proyecto a la lista de proyectos
       console.log('Nuevo proyecto añadido:', newProject);// Imprimir en consola para verificar
-
     },
     openEditProjectModal(project) {
       this.selectedProject = { ...project }; // Clonar el proyecto seleccionado
@@ -131,6 +132,14 @@ export default {
         console.log('Proyecto eliminado:', this.projectToDelete);
         this.closeDeleteDialog();
       }
+    },
+    openProjectDetails(project){
+      this.selectedProject= { ...project};
+      this.$nextTick(()=>{
+        if (this.$refs.projectDetailsModal){
+          this.$refs.projectDetailsModal.open();
+        }
+      });
     }
   }
 }
