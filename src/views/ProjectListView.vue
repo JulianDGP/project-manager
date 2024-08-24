@@ -1,6 +1,7 @@
 <!-- src/views/ProjectListView.vue -->
 <template>
   <v-container class="project-list-container" fluid>
+
     <!-- Botón Crear Proyecto -->
     <v-row class="mb-4">
       <v-col>
@@ -16,18 +17,27 @@
     <CreateProjectModal ref="createProjectModal" @project-saved="addProject" />
 
     <!-- Modal Editar Proyecto -->
-    <CreateProjectModal
-      ref="editProjectModal"
-      v-if="selectedProject"
-      :project="selectedProject"
-      @project-saved="updateProject"
-    />
+    <CreateProjectModal ref="editProjectModal" v-if="selectedProject" :project="selectedProject"
+      @project-saved="updateProject" />
 
+
+    <!-- Modal de Confirmación para Eliminar Proyecto -->
+    <v-dialog v-model="deleteDialog" max-width="500">
+      <v-card>
+        <v-card-title class="headline">Confirmar Eliminación</v-card-title>
+        <v-card-text>¿Estás seguro de que deseas eliminar este proyecto?</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="red darken-1" text @click="deleteProject">Eliminar</v-btn>
+          <v-btn color="blue darken-1" text @click="closeDeleteDialog">Cancelar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
     <!-- Lista de proyectos -->
     <v-row v-for="project in projects" :key="project.id">
       <v-col>
-        <v-card elevation="8">
+        <v-card elevation="5">
           <!-- Título del proyecto -->
           <v-card-title>{{ project.name }}</v-card-title>
           <!-- Subtítulo mostrando el estado del proyecto -->
@@ -41,6 +51,10 @@
           <!-- Botón de edición -->
           <v-btn icon @click="openEditProjectModal(project)">
             <v-icon>mdi-pencil</v-icon>
+          </v-btn>
+          <!-- Botón de eliminación -->
+          <v-btn icon @click="openDeleteDialog(project)">
+            <v-icon color="red">mdi-delete</v-icon>
           </v-btn>
         </v-card>
       </v-col>
@@ -61,22 +75,19 @@ export default {
   data() {
     return {
       projects: [
-        { id: 1, name: 'Proyecto 1', description: 'Descripción del Proyecto 1', active: 'Activo' },
-        { id: 2, name: 'Proyecto 2', description: 'Descripción del Proyecto 2', active: 'Inactivo' },
-        { id: 3, name: 'Proyecto 3', description: 'Descripción del Proyecto 3', active: 'Activo' },
-        { id: 4, name: 'Proyecto 4', description: 'Descripción del Proyecto 4', active: 'Inactivo' },
-        { id: 5, name: 'Proyecto 5', description: 'Descripción del Proyecto 5', active: 'Activo' },
-        { id: 6, name: 'Proyecto 6', description: 'Descripción del Proyecto 6', active: 'Inactivo' },
-        { id: 7, name: 'Proyecto 7', description: 'Descripción del Proyecto 7', active: 'Activo' },
-        { id: 8, name: 'Proyecto 8', description: 'Descripción del Proyecto 8', active: 'Inactivo' },
-        { id: 9, name: 'Proyecto 9', description: 'Descripción del Proyecto 9', active: 'Activo' },
-        { id: 10, name: 'Proyecto 10', description: 'Descripción del Proyecto 10', active: 'Inactivo' },
-        { id: 11, name: 'Proyecto 11', description: 'Descripción del Proyecto 11', active: 'Activo' },
-        { id: 12, name: 'Proyecto 12', description: 'Descripción del Proyecto 12', active: 'Inactivo' },
+        { id: 1, name: 'Proyecto 1', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula mauris nec augue elementum, nec scelerisque arcu fringilla. Vivamus euismod, metus at fermentum vehicula, urna justo lobortis est, in volutpat neque nunc vel nisi. Donec non urna ut erat malesuada dictum non non nisi.', active: 'Activo' },
+        { id: 2, name: 'Proyecto 2', description: 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.', active: 'Inactivo' },
+        { id: 3, name: 'Proyecto 3', description: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', active: 'Activo' },
+        { id: 4, name: 'Proyecto 4', description: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.', active: 'Inactivo' },
+        { id: 5, name: 'Proyecto 5', description: 'Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida. Duis ac tellus et risus vulputate vehicula.', active: 'Activo' },
+        { id: 6, name: 'Proyecto 6', description: 'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.', active: 'Inactivo' },
       ],
       selectedProject: null, // Proyecto seleccionado para editar
+      projectToDelete: null, // Proyecto seleccionado para eliminar
+      deleteDialog: false, // Estado del modal de confirmación de eliminación
     };
   },
+
   methods: {
     openCreateProjectModal() {// Método para abrir el modal de creación de proyectos
       this.$refs.createProjectModal.open();
@@ -105,6 +116,21 @@ export default {
         this.projects[index] = updatedProject;
       }
       console.log('Proyecto actualizado:', updatedProject);
+    },
+    openDeleteDialog(project) {
+      this.projectToDelete = project;
+      this.deleteDialog = true;
+    },
+    closeDeleteDialog() {
+      this.projectToDelete = null;
+      this.deleteDialog = false;
+    },
+    deleteProject() {
+      if (this.projectToDelete) {
+        this.projects = this.projects.filter(p => p.id !== this.projectToDelete.id);
+        console.log('Proyecto eliminado:', this.projectToDelete);
+        this.closeDeleteDialog();
+      }
     }
   }
 }
@@ -113,17 +139,22 @@ export default {
 <style scoped>
 /* Estilos específicos para ProjectList */
 .project-list-container {
-  max-width: 80%; /* Ancho máximo del contenedor */
-  overflow-y: auto; /* Activa el scroll vertical */
-  padding-top: 16px; /* Espaciado para los elementos */
+  max-width: 80%;
+  /* Ancho máximo del contenedor */
+  overflow-y: auto;
+  /* Activa el scroll vertical */
+  padding-top: 16px;
+  /* Espaciado para los elementos */
 }
 
 /* Estilos para los estados */
 .status-activo {
-  color: green; /* verde para activo */
+  color: green;
+  /* verde para activo */
 }
 
 .status-inactivo {
-  color: red; /* Rojo para inactivo */
+  color: red;
+  /* Rojo para inactivo */
 }
 </style>
