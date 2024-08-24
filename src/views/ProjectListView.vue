@@ -15,10 +15,19 @@
     <!-- Se escucha el evento 'project-saved' y se ejecuta el método 'addProject' -->
     <CreateProjectModal ref="createProjectModal" @project-saved="addProject" />
 
+    <!-- Modal Editar Proyecto -->
+    <CreateProjectModal
+      ref="editProjectModal"
+      v-if="selectedProject"
+      :project="selectedProject"
+      @project-saved="updateProject"
+    />
+
+
     <!-- Lista de proyectos -->
     <v-row v-for="project in projects" :key="project.id">
       <v-col>
-        <v-card>
+        <v-card elevation="8">
           <!-- Título del proyecto -->
           <v-card-title>{{ project.name }}</v-card-title>
           <!-- Subtítulo mostrando el estado del proyecto -->
@@ -29,6 +38,10 @@
           <v-card-text>
             {{ project.description }}
           </v-card-text>
+          <!-- Botón de edición -->
+          <v-btn icon @click="openEditProjectModal(project)">
+            <v-icon>mdi-pencil</v-icon>
+          </v-btn>
         </v-card>
       </v-col>
     </v-row>
@@ -60,22 +73,38 @@ export default {
         { id: 10, name: 'Proyecto 10', description: 'Descripción del Proyecto 10', active: 'Inactivo' },
         { id: 11, name: 'Proyecto 11', description: 'Descripción del Proyecto 11', active: 'Activo' },
         { id: 12, name: 'Proyecto 12', description: 'Descripción del Proyecto 12', active: 'Inactivo' },
-      ]
-    }
+      ],
+      selectedProject: null, // Proyecto seleccionado para editar
+    };
   },
   methods: {
-    openCreateProjectModal() {    // Método para abrir el modal de creación de proyectos
-
+    openCreateProjectModal() {// Método para abrir el modal de creación de proyectos
       this.$refs.createProjectModal.open();
     },
     addProject(newProject) {// Método para agregar un nuevo proyecto a la lista
 
       newProject.id = this.projects.length + 1;// Asignar un ID único al nuevo proyecto
-
       this.projects.push(newProject); // Añadir el nuevo proyecto a la lista de proyectos
-
       console.log('Nuevo proyecto añadido:', newProject);// Imprimir en consola para verificar
 
+    },
+    openEditProjectModal(project) {
+      this.selectedProject = { ...project }; // Clonar el proyecto seleccionado
+      // asegurarse de que el ref `editProjectModal` esté definido antes de intentar abrir el modal
+      this.$nextTick(() => {
+        if (this.$refs.editProjectModal) {
+          this.$refs.editProjectModal.open();
+        } else {
+          console.error("El modal de edición no está disponible.");
+        }
+      });
+    },
+    updateProject(updatedProject) {
+      const index = this.projects.findIndex(p => p.id === updatedProject.id);
+      if (index !== -1) {
+        this.projects[index] = updatedProject;
+      }
+      console.log('Proyecto actualizado:', updatedProject);
     }
   }
 }
