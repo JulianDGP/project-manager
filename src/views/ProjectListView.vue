@@ -21,7 +21,8 @@
       @project-saved="updateProject" />
 
     <!-- Modal Detalles del Proyecto -->
-    <ProjectDetailsModal ref="projectDetailsModal" :project="selectedProject" />
+    <ProjectDetailsModal ref="projectDetailsModal"
+    v-if="selectedProject" :project="selectedProject" />
 
     <!-- Modal de Confirmación para Eliminar Proyecto -->
     <v-dialog v-model="deleteDialog" max-width="500">
@@ -77,15 +78,23 @@ export default {
   },
   data() {
     return {
+
+      
       projects: [
-        { id: 1, name: 'Proyecto 1', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula mauris nec augue elementum, nec scelerisque arcu fringilla. Vivamus euismod, metus at fermentum vehicula, urna justo lobortis est, in volutpat neque nunc vel nisi. Donec non urna ut erat malesuada dictum non non nisi.', active: 'Activo' },
-        { id: 2, name: 'Proyecto 2', description: 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.', active: 'Inactivo' },
-        { id: 3, name: 'Proyecto 3', description: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', active: 'Activo' },
-        { id: 4, name: 'Proyecto 4', description: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.', active: 'Inactivo' },
-        { id: 5, name: 'Proyecto 5', description: 'Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida. Duis ac tellus et risus vulputate vehicula.', active: 'Activo' },
-        { id: 6, name: 'Proyecto 6', description: 'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.', active: 'Inactivo' },
+        { id: 1, name: 'Proyecto 1', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula mauris nec augue elementum, nec scelerisque arcu fringilla. Vivamus euismod, metus at fermentum vehicula, urna justo lobortis est, in volutpat neque nunc vel nisi. Donec non urna ut erat malesuada dictum non non nisi.', active: 'Activo', tasks: [
+          { id: 1, name: 'Tarea 1.1', description: 'Descripción de la tarea 1.1', status: 'Pendiente' },
+          { id: 2, name: 'Tarea 1.2', description: 'Descripción de la tarea 1.2', status: 'En Progreso' },
+          { id: 3, name: 'Tarea 1.3', description: 'Descripción de la tarea 1.3', status: 'En Progreso' },
+          { id: 4, name: 'Tarea 1.4', description: 'Descripción de la tarea 1.4', status: 'En Progreso' },
+          { id: 5, name: 'Tarea 1.5', description: 'Descripción de la tarea 1.5', status: 'En Progreso' }
+        ] },
+        { id: 2, name: 'Proyecto 2', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula mauris nec augue elementum, nec scelerisque arcu fringilla. Vivamus euismod, metus at fermentum vehicula, urna justo lobortis est, in volutpat neque nunc vel nisi. Donec non urna ut erat malesuada dictum non non nisi.', active: 'Inactivo', tasks: [
+          { id: 1, name: 'Tarea 2.1', description: 'Descripción de la tarea 2.1', status: 'Completada' }
+        ] },
+        { id: 3, name: 'Proyecto 3', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula mauris nec augue elementum, nec scelerisque arcu fringilla. Vivamus euismod, metus at fermentum vehicula, urna justo lobortis est, in volutpat neque nunc vel nisi. Donec non urna ut erat malesuada dictum non non nisi.', active: 'Activo', tasks: [] },
+        // Otros proyectos...
       ],
-      selectedProject: null, // Proyecto seleccionado para editar
+      selectedProject: {}, // Proyecto seleccionado para editar
       projectToDelete: null, // Proyecto seleccionado para eliminar
       deleteDialog: false, // Estado del modal de confirmación de eliminación
     };
@@ -97,6 +106,7 @@ export default {
     },
     addProject(newProject) {// Método para agregar un nuevo proyecto a la lista
       newProject.id = this.projects.length + 1;// Asignar un ID único al nuevo proyecto
+      newProject.tasks = []; // Asegurarse de que el nuevo proyecto tenga una lista de tareas vacía
       this.projects.push(newProject); // Añadir el nuevo proyecto a la lista de proyectos
       console.log('Nuevo proyecto añadido:', newProject);// Imprimir en consola para verificar
     },
