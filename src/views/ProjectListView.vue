@@ -38,7 +38,7 @@
     </v-dialog>
 
     <!-- Lista de proyectos -->
-    <v-row v-for="project in projects" :key="project.id">
+    <v-row v-for="project in foundedProjects" :key="project.id">
       <v-col>
         <v-card @click="openProjectDetails(project)" elevation="5">
           <!-- Título del proyecto -->
@@ -76,10 +76,13 @@ export default {
     CreateProjectModal,
     ProjectDetailsModal
   },
+  props:{
+    searchQuery: String,
+  },
   data() {
     return {
 
-      
+      // Lista de proyectos de ejemplo 
       projects: [
         { id: 1, name: 'Proyecto 1', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula mauris nec augue elementum, nec scelerisque arcu fringilla. Vivamus euismod, metus at fermentum vehicula, urna justo lobortis est, in volutpat neque nunc vel nisi. Donec non urna ut erat malesuada dictum non non nisi.', active: 'Activo', tasks: [
           { id: 1, name: 'Tarea 1.1', description: 'Descripción de la tarea 1.1', status: 'Pendiente' },
@@ -92,14 +95,31 @@ export default {
           { id: 1, name: 'Tarea 2.1', description: 'Descripción de la tarea 2.1', status: 'Completada' }
         ] },
         { id: 3, name: 'Proyecto 3', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula mauris nec augue elementum, nec scelerisque arcu fringilla. Vivamus euismod, metus at fermentum vehicula, urna justo lobortis est, in volutpat neque nunc vel nisi. Donec non urna ut erat malesuada dictum non non nisi.', active: 'Activo', tasks: [] },
-        // Otros proyectos...
+        { id: 4, name: 'Proyecto 4', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula mauris nec augue elementum, nec scelerisque arcu fringilla. Vivamus euismod, metus at fermentum vehicula, urna justo lobortis est, in volutpat neque nunc vel nisi. Donec non urna ut erat malesuada dictum non non nisi.', active: 'Inactivo', tasks: [
+          { id: 1, name: 'Tarea 4.1', description: 'Descripción de la tarea 4.1', status: 'Completada' }
+        ] },
+
+        { id: 5, name: 'Proyecto 5', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula mauris nec augue elementum, nec scelerisque arcu fringilla. Vivamus euismod, metus at fermentum vehicula, urna justo lobortis est, in volutpat neque nunc vel nisi. Donec non urna ut erat malesuada dictum non non nisi.', active: 'Activo', tasks: [
+          { id: 1, name: 'Tarea 5.1', description: 'Descripción de la tarea 5.1', status: 'Completada' }
+        ] },
       ],
       selectedProject: {}, // Proyecto seleccionado para editar
       projectToDelete: null, // Proyecto seleccionado para eliminar
       deleteDialog: false, // Estado del modal de confirmación de eliminación
     };
   },
-
+  computed: {
+    foundedProjects() {
+      // Filtrar proyectos por nombre
+      if (this.searchQuery) {
+        return this.projects.filter(project =>
+          project.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+        );
+      } else {
+        return this.projects;
+      }
+    }
+  },
   methods: {
     openCreateProjectModal() {// Método para abrir el modal de creación de proyectos
       this.$refs.createProjectModal.open();
