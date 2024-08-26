@@ -12,6 +12,28 @@
       </v-col>
     </v-row>
 
+     <!-- Mostrar mensaje si no hay proyectos -->
+    <v-row v-if="projects.length === 0">
+      <v-col>
+        <v-alert type="info" text>
+          ¡Vaya! Aún no tienes ningún proyecto creado ☹️. Puedes comenzar a crear uno haciendo clic en el botón 'Crear
+          Proyecto'. Tus proyectos se guardarán en tu navegador, así que, aunque recargues la página o cierres y vuelvas
+          a abrir el navegador, tus tareas y proyectos seguirán aquí... a menos que borres la caché o uses un navegador
+          diferente 🤔.
+        </v-alert>
+      </v-col>
+    </v-row>
+
+
+    <!-- Mostrar mensaje si no se encuentran proyectos en la búsqueda -->
+    <v-row v-else-if="foundedProjects.length === 0">
+      <v-col>
+        <v-alert type="info" text>
+          Parece que no se encontraron proyectos que coincidan con tu búsqueda 🥲 ... Intenta buscar con otro nombre o crear un nuevo proyecto🤓☝️
+        </v-alert>
+      </v-col>
+    </v-row>
+
     <!-- Modal Crear Proyecto -->
     <!-- Se escucha el evento 'project-saved' y se ejecuta el método 'addProject' -->
     <CreateProjectModal ref="createProjectModal" @project-saved="addProject" />
@@ -21,8 +43,7 @@
       @project-saved="updateProject" />
 
     <!-- Modal Detalles del Proyecto -->
-    <ProjectDetailsModal ref="projectDetailsModal"
-    v-if="selectedProject" :project="selectedProject" />
+    <ProjectDetailsModal ref="projectDetailsModal" v-if="selectedProject" :project="selectedProject" />
 
     <!-- Modal de Confirmación para Eliminar Proyecto -->
     <v-dialog v-model="deleteDialog" max-width="500">
@@ -76,7 +97,7 @@ export default {
     CreateProjectModal,
     ProjectDetailsModal
   },
-  props:{
+  props: {
     searchQuery: String,
   },
   data() {
@@ -84,24 +105,32 @@ export default {
 
       // Lista de proyectos de ejemplo 
       projects: [
-        { id: 1, name: 'Proyecto 1', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula mauris nec augue elementum, nec scelerisque arcu fringilla. Vivamus euismod, metus at fermentum vehicula, urna justo lobortis est, in volutpat neque nunc vel nisi. Donec non urna ut erat malesuada dictum non non nisi.', active: 'Activo', tasks: [
-          { id: 1, name: 'Tarea 1.1', description: 'Descripción de la tarea 1.1', status: 'Pendiente' },
-          { id: 2, name: 'Tarea 1.2', description: 'Descripción de la tarea 1.2', status: 'En Progreso' },
-          { id: 3, name: 'Tarea 1.3', description: 'Descripción de la tarea 1.3', status: 'En Progreso' },
-          { id: 4, name: 'Tarea 1.4', description: 'Descripción de la tarea 1.4', status: 'En Progreso' },
-          { id: 5, name: 'Tarea 1.5', description: 'Descripción de la tarea 1.5', status: 'En Progreso' }
-        ] },
-        { id: 2, name: 'Proyecto 2', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula mauris nec augue elementum, nec scelerisque arcu fringilla. Vivamus euismod, metus at fermentum vehicula, urna justo lobortis est, in volutpat neque nunc vel nisi. Donec non urna ut erat malesuada dictum non non nisi.', active: 'Inactivo', tasks: [
-          { id: 1, name: 'Tarea 2.1', description: 'Descripción de la tarea 2.1', status: 'Completada' }
-        ] },
+        {
+          id: 1, name: 'Proyecto 1', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula mauris nec augue elementum, nec scelerisque arcu fringilla. Vivamus euismod, metus at fermentum vehicula, urna justo lobortis est, in volutpat neque nunc vel nisi. Donec non urna ut erat malesuada dictum non non nisi.', active: 'Activo', tasks: [
+            { id: 1, name: 'Tarea 1.1', description: 'Descripción de la tarea 1.1', status: 'Pendiente' },
+            { id: 2, name: 'Tarea 1.2', description: 'Descripción de la tarea 1.2', status: 'En Progreso' },
+            { id: 3, name: 'Tarea 1.3', description: 'Descripción de la tarea 1.3', status: 'En Progreso' },
+            { id: 4, name: 'Tarea 1.4', description: 'Descripción de la tarea 1.4', status: 'En Progreso' },
+            { id: 5, name: 'Tarea 1.5', description: 'Descripción de la tarea 1.5', status: 'En Progreso' }
+          ]
+        },
+        {
+          id: 2, name: 'Proyecto 2', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula mauris nec augue elementum, nec scelerisque arcu fringilla. Vivamus euismod, metus at fermentum vehicula, urna justo lobortis est, in volutpat neque nunc vel nisi. Donec non urna ut erat malesuada dictum non non nisi.', active: 'Inactivo', tasks: [
+            { id: 1, name: 'Tarea 2.1', description: 'Descripción de la tarea 2.1', status: 'Completada' }
+          ]
+        },
         { id: 3, name: 'Proyecto 3', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula mauris nec augue elementum, nec scelerisque arcu fringilla. Vivamus euismod, metus at fermentum vehicula, urna justo lobortis est, in volutpat neque nunc vel nisi. Donec non urna ut erat malesuada dictum non non nisi.', active: 'Activo', tasks: [] },
-        { id: 4, name: 'Proyecto 4', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula mauris nec augue elementum, nec scelerisque arcu fringilla. Vivamus euismod, metus at fermentum vehicula, urna justo lobortis est, in volutpat neque nunc vel nisi. Donec non urna ut erat malesuada dictum non non nisi.', active: 'Inactivo', tasks: [
-          { id: 1, name: 'Tarea 4.1', description: 'Descripción de la tarea 4.1', status: 'Completada' }
-        ] },
+        {
+          id: 4, name: 'Proyecto 4', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula mauris nec augue elementum, nec scelerisque arcu fringilla. Vivamus euismod, metus at fermentum vehicula, urna justo lobortis est, in volutpat neque nunc vel nisi. Donec non urna ut erat malesuada dictum non non nisi.', active: 'Inactivo', tasks: [
+            { id: 1, name: 'Tarea 4.1', description: 'Descripción de la tarea 4.1', status: 'Completada' }
+          ]
+        },
 
-        { id: 5, name: 'Proyecto 5', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula mauris nec augue elementum, nec scelerisque arcu fringilla. Vivamus euismod, metus at fermentum vehicula, urna justo lobortis est, in volutpat neque nunc vel nisi. Donec non urna ut erat malesuada dictum non non nisi.', active: 'Activo', tasks: [
-          { id: 1, name: 'Tarea 5.1', description: 'Descripción de la tarea 5.1', status: 'Completada' }
-        ] },
+        {
+          id: 5, name: 'Proyecto 5', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula mauris nec augue elementum, nec scelerisque arcu fringilla. Vivamus euismod, metus at fermentum vehicula, urna justo lobortis est, in volutpat neque nunc vel nisi. Donec non urna ut erat malesuada dictum non non nisi.', active: 'Activo', tasks: [
+            { id: 1, name: 'Tarea 5.1', description: 'Descripción de la tarea 5.1', status: 'Completada' }
+          ]
+        },
       ],
       selectedProject: {}, // Proyecto seleccionado para editar
       projectToDelete: null, // Proyecto seleccionado para eliminar
@@ -163,10 +192,10 @@ export default {
         this.closeDeleteDialog();
       }
     },
-    openProjectDetails(project){
-      this.selectedProject= { ...project};
-      this.$nextTick(()=>{
-        if (this.$refs.projectDetailsModal){
+    openProjectDetails(project) {
+      this.selectedProject = { ...project };
+      this.$nextTick(() => {
+        if (this.$refs.projectDetailsModal) {
           this.$refs.projectDetailsModal.open();
         }
       });
