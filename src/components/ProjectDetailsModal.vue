@@ -1,19 +1,14 @@
 <template>
-  <!-- Dialogo principal que muestra los detalles del proyecto -->
   <v-dialog v-model="dialog" max-width="800">
     <v-card>
-      <!-- Encabezado del diálogo con el nombre del proyecto y un botón para cerrar -->
       <v-card-title class="text-h4 pa-6 d-flex justify-space-between align-center">
         <span>{{ project.name }}</span>
         <v-btn icon @click="close">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
-
-      <!-- Contenido del diálogo -->
       <v-card-text class="pa-4">
         <v-container>
-          <!-- Información del proyecto: Descripción y Estado -->
           <v-row>
             <v-col>
               <h3 class="text-h6 mb-2">Descripción</h3>
@@ -26,8 +21,6 @@
               </v-chip>
             </v-col>
           </v-row>
-
-          <!-- Estadísticas de las tareas del proyecto -->
           <v-row v-if="project.tasks && project.tasks.length">
             <v-col>
               <h3 class="text-h6 mb-2">Estadísticas de Tareas</h3>
@@ -41,8 +34,6 @@
               </v-row>
             </v-col>
           </v-row>
-
-          <!-- Botón para crear una nueva tarea -->
           <v-row class="mt-4">
             <v-col cols="12">
               <v-btn color="primary" @click="openCreateTaskModal">
@@ -51,8 +42,6 @@
               </v-btn>
             </v-col>
           </v-row>
-
-          <!-- Lista de tareas del proyecto -->
           <v-row v-if="project.tasks && project.tasks.length">
             <v-col cols="12">
               <h3 class="text-h6 mb-2">Tareas del Proyecto</h3>
@@ -73,15 +62,11 @@
           </v-row>
         </v-container>
       </v-card-text>
-
-      <!-- Acciones del diálogo cerrar -->
       <v-card-actions class="pa-4">
         <v-spacer></v-spacer>
         <v-btn color="primary" text @click="close">Cerrar</v-btn>
       </v-card-actions>
     </v-card>
-
-    <!-- Componente modal para crear nuevas tareas -->
     <CreateTaskModal ref="createTaskModal" @task-saved="addTask" />
   </v-dialog>
 </template>
@@ -91,7 +76,6 @@ import CreateTaskModal from './CreateTaskModal.vue';
 
 export default {
   props: {
-    // Propiedad que recibe la información del proyecto
     project: {
       type: Object,
       default: () => ({})
@@ -99,14 +83,13 @@ export default {
   },
   data() {
     return {
-      dialog: false, // Controla la visibilidad del diálogo
+      dialog: false,
     };
   },
   components: {
-    CreateTaskModal // Componente para la creación de tareas
+    CreateTaskModal
   },
   computed: {
-    // Calcula las estadísticas de las tareas del proyecto
     taskStatistics() {
       const stats = {
         Pendientes: 0,
@@ -124,30 +107,24 @@ export default {
     }
   },
   methods: {
-    // Abre el diálogo
     open() {
       this.dialog = true;
     },
-    // Cierra el diálogo
     close() {
       this.dialog = false;
     },
-    // Abre el modal para crear una nueva tarea
     openCreateTaskModal() {
       if (this.$refs.createTaskModal) {
         this.$refs.createTaskModal.open();
       }
     },
-    // Añade una nueva tarea al proyecto
     addTask(newTask) {
       if (!this.project.tasks) {
         this.project.tasks = [];
       }
-      newTask.id = this.project.tasks.length + 1; // Asigna un ID a la nueva tarea
-      this.project.tasks.push(newTask); // Agrega la tarea a la lista
-      console.log('Nueva tarea añadida:', newTask);
+      newTask.id = this.project.tasks.length + 1;
+      this.project.tasks.push(newTask);
     },
-    // Retorna el color correspondiente al estado de la tarea
     getStatusColor(status) {
       switch (status) {
         case 'Pendiente':
@@ -165,7 +142,6 @@ export default {
 </script>
 
 <style scoped>
-/* Estilos para la tarjeta de tarea, incluyendo una animación al pasar el mouse */
 .task-card {
   transition: all 0.3s ease;
 }

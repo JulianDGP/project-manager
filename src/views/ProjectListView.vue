@@ -1,31 +1,25 @@
-<!-- src/views/ProjectListView.vue -->
-
 <template>
   <v-container class="project-list-container" fluid>
-    <!-- Botón Crear Proyecto -->
     <v-row class="mb-4">
       <v-col>
-        <!-- Botón para abrir el modal de creación de proyectos -->
-        <v-btn color="primary" @click="openCreateProjectModal"  elevation="2" rounded>
+        <v-btn color="primary" @click="openCreateProjectModal" elevation="2" rounded>
           <v-icon left>mdi-plus</v-icon>
           Crear Proyecto
         </v-btn>
       </v-col>
     </v-row>
 
-    <!-- Mostrar mensaje si no hay proyectos -->
     <v-row v-if="projects.length === 0">
       <v-col>
         <v-alert type="info" text>
           ¡Vaya! Aún no tienes ningún proyecto creado ☹️. Puedes comenzar a crear uno haciendo clic en el botón 'Crear
           Proyecto'. Tus proyectos se guardarán en tu navegador, así que, aunque recargues la página o cierres y vuelvas
-          a abrir el navegador, tus tareas y proyectos seguirán aquí... a menos que borres la caché o uses un navegador
+          a abrir el navegador, tus proyectos y sus tareas seguirán aquí... a menos que borres la caché o uses un navegador
           diferente 🤔.
         </v-alert>
       </v-col>
     </v-row>
 
-    <!-- Mostrar mensaje si no se encuentran proyectos en la búsqueda -->
     <v-row v-else-if="foundedProjects.length === 0">
       <v-col>
         <v-alert type="info" prominent elevation="2">
@@ -34,16 +28,9 @@
       </v-col>
     </v-row>
 
-    <!-- Modal Crear Proyecto -->
     <CreateProjectModal ref="createProjectModal" @project-saved="addProject" />
-
-    <!-- Modal Editar Proyecto -->
-    <CreateProjectModal ref="editProjectModal" v-if="selectedProject" :project="selectedProject" @project-saved="updateProject" />
-
-    <!-- Modal Detalles del Proyecto -->
+    <EditProjectModal ref="editProjectModal" v-if="selectedProject" :project="selectedProject" @project-saved="updateProject" />
     <ProjectDetailsModal ref="projectDetailsModal" v-if="selectedProject" :project="selectedProject" />
-
-    <!-- Modal de Confirmación para Eliminar Proyecto -->
     <v-dialog v-model="deleteDialog" max-width="500">
       <v-card>
         <v-card-title>Confirmar Eliminación</v-card-title>
@@ -55,26 +42,16 @@
       </v-card>
     </v-dialog>
 
-    <!-- Lista de proyectos -->
     <v-row>
-      <!-- Utilizamos v-col con cols="12" sm="6" para asegurar máximo 2 columnas -->
       <v-col cols="12" sm="6" v-for="project in foundedProjects" :key="project.id">
         <v-card @click="openProjectDetails(project)" elevation="2" hover class="project-card transition-swing mb-4">
-          <!-- Título del proyecto y chip de estado -->
           <v-card-title class="d-flex justify-space-between">
             <span>{{ project.name }}</span>
-            <v-chip
-              :color="project.active === 'Activo' ? 'success' : 'error'">
+            <v-chip :color="project.active === 'Activo' ? 'success' : 'error'">
               {{ project.active }}
             </v-chip>
           </v-card-title>
-          
-          <!-- Descripción del proyecto -->
-          <v-card-text >
-            {{ project.description }}
-          </v-card-text>
-          
-          <!-- Botones de acción -->
+          <v-card-text>{{ project.description }}</v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn icon @click.stop="openEditProjectModal(project)">
@@ -91,27 +68,27 @@
 </template>
 
 <script>
-// Importar componentes necesarios
 import CreateProjectModal from '../components/CreateProjectModal.vue';
+import EditProjectModal from '../components/EditProjectModal.vue';
 import ProjectDetailsModal from '../components/ProjectDetailsModal.vue';
 
 export default {
   name: 'ProjectList',
   components: {
     CreateProjectModal,
+    EditProjectModal,
     ProjectDetailsModal
   },
   props: {
-    searchQuery: String, // Prop para recibir la consulta de búsqueda
+    searchQuery: String,
   },
   data() {
     return {
-      // Lista de proyectos de ejemplo
       projects: [
         {
           id: 1,
           name: 'Proyecto 1',
-          description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula mauris nec augue elementum, nec scelerisque arcu fringilla.',
+          description: 'Lorem ipsum dolor sit amet...',
           active: 'Activo',
           tasks: [
             { id: 1, name: 'Tarea 1.1', description: 'Descripción de la tarea 1.1', status: 'Pendiente' },
@@ -121,20 +98,19 @@ export default {
         {
           id: 2,
           name: 'Proyecto 2',
-          description: 'Vivamus euismod, metus at fermentum vehicula, urna justo lobortis est, in volutpat neque nunc vel nisi.',
+          description: 'Vivamus euismod...',
           active: 'Inactivo',
           tasks: [
             { id: 1, name: 'Tarea 2.1', description: 'Descripción de la tarea 2.1', status: 'Completada' }
           ]
         },
       ],
-      selectedProject: {}, // Proyecto seleccionado para editar o ver detalles
-      projectToDelete: null, // Proyecto seleccionado para eliminar
-      deleteDialog: false, // Estado del modal de confirmación de eliminación
+      selectedProject: null,
+      projectToDelete: null,
+      deleteDialog: false,
     };
   },
   computed: {
-    // Filtrar proyectos basados en la consulta de búsqueda
     foundedProjects() {
       if (this.searchQuery) {
         return this.projects.filter(project =>
@@ -146,62 +122,49 @@ export default {
     }
   },
   methods: {
-    // Método para abrir el modal de creación de proyectos
     openCreateProjectModal() {
       this.$refs.createProjectModal.open();
     },
-    // Método para agregar un nuevo proyecto a la lista
     addProject(newProject) {
-      newProject.id = this.projects.length + 1; // Asignar un ID único al nuevo proyecto
-      newProject.tasks = []; // Asegurarse de que el nuevo proyecto tenga una lista de tareas vacía
-      this.projects.push(newProject); // Añadir el nuevo proyecto a la lista de proyectos
-      console.log('Nuevo proyecto añadido:', newProject);
+      newProject.id = this.projects.length + 1;
+      newProject.tasks = [];
+      this.projects.push(newProject);
     },
-    // Método para abrir el modal de edición de proyectos
     openEditProjectModal(project) {
-      this.selectedProject = { ...project }; // Clonar el proyecto seleccionado
+      this.selectedProject = { ...project };
       this.$nextTick(() => {
-        if (this.$refs.editProjectModal) {
-          this.$refs.editProjectModal.open();
-        } else {
-          console.error("El modal de edición no está disponible.");
-        }
-      });
+      if (this.$refs.editProjectModal) {
+        this.$refs.editProjectModal.open();
+      }
+    });
     },
-    // Método para actualizar un proyecto existente
     updateProject(updatedProject) {
       const index = this.projects.findIndex(p => p.id === updatedProject.id);
       if (index !== -1) {
         this.projects[index] = updatedProject;
       }
-      console.log('Proyecto actualizado:', updatedProject);
     },
-    // Método para abrir el diálogo de confirmación de eliminación
     openDeleteDialog(project) {
       this.projectToDelete = project;
       this.deleteDialog = true;
     },
-    // Método para cerrar el diálogo de confirmación de eliminación
     closeDeleteDialog() {
       this.projectToDelete = null;
       this.deleteDialog = false;
     },
-    // Método para eliminar un proyecto
     deleteProject() {
       if (this.projectToDelete) {
         this.projects = this.projects.filter(p => p.id !== this.projectToDelete.id);
-        console.log('Proyecto eliminado:', this.projectToDelete);
         this.closeDeleteDialog();
       }
     },
-    // Método para abrir el modal de detalles del proyecto
     openProjectDetails(project) {
       this.selectedProject = { ...project };
       this.$nextTick(() => {
-        if (this.$refs.projectDetailsModal) {
-          this.$refs.projectDetailsModal.open();
-        }
-      });
+      if (this.$refs.projectDetailsModal) {
+        this.$refs.projectDetailsModal.open();
+      }
+    });
     }
   }
 }
@@ -209,7 +172,7 @@ export default {
 
 <style scoped>
 .project-list-container {
-  max-width: 1200px; /* Ancho máximo del contenedor */
+  max-width: 1200px;
   padding-top: 24px;
 }
 
