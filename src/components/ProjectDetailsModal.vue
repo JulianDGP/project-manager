@@ -60,9 +60,13 @@
                       </v-chip>
                     </v-card-subtitle>
                     <v-card-text>{{ task.description }}</v-card-text>
-
                     <v-card-actions>
                       <v-spacer></v-spacer>
+                      <!-- Botón para editar la tarea -->
+                      <v-btn icon @click.stop="openEditTaskModal(task)">
+                        <v-icon>mdi-pencil</v-icon>
+                      </v-btn>
+                      <!-- Botón para eliminar la tarea -->
                       <v-btn icon @click.stop="openDeleteTaskDialog(task)">
                         <v-icon color="error">mdi-delete</v-icon>
                       </v-btn>
@@ -81,8 +85,11 @@
     </v-card>
 
     <!-- Modal de creacion de la tarea -->
-
     <CreateTaskModal ref="createTaskModal" @task-saved="addTask" />
+
+    <!-- Modal de edición de tarea -->
+    <EditTaskModal ref="editTaskModal" :task="taskToEdit" @task-updated="updateTask" />
+
 
     <!-- Modal de Confirmación para Eliminar Tarea -->
     <v-dialog v-model="deleteTaskDialog" max-width="500">
@@ -101,6 +108,7 @@
 
 <script>
 import CreateTaskModal from './CreateTaskModal.vue';
+import EditTaskModal from './EditTaskModal.vue';
 
 export default {
   props: {
@@ -113,12 +121,14 @@ export default {
     return {
       dialog: false,
       deleteTaskDialog: false, // Estado del modal de confirmación de eliminación de tarea
+      taskToEdit: null, // Tarea seleccionada para editar
       taskToDelete: null, // Tarea seleccionada para eliminar
       localProject: {} // Inicializa la propiedad local para almacenar una copia del proyecto
     };
   },
   components: {
-    CreateTaskModal
+    CreateTaskModal,
+    EditTaskModal
   },
   computed: {
     taskStatistics() {
@@ -151,6 +161,19 @@ export default {
     openCreateTaskModal() {
       if (this.$refs.createTaskModal) {
         this.$refs.createTaskModal.open();
+      }
+    },
+    openEditTaskModal(task) {
+      this.taskToEdit = { ...task };
+      this.$nextTick(() => {
+        this.$refs.editTaskModal.open();
+      });
+    },
+    updateTask(updatedTask) {
+      const index = this.localProject.tasks.findIndex(task => task.id === updatedTask.id);
+      if (index !== -1) {
+        this.localProject.tasks.splice(index, 1, updatedTask);
+        this.updateProjectInLocalStorage();
       }
     },
     addTask(newTask) {
@@ -192,7 +215,6 @@ export default {
         return project;
       });
       localStorage.setItem('projects', JSON.stringify(updatedProjects)); // Guarda la nueva lista de proyectos en localStorage
-
       // Actualiza también el store para que esté sincronizado
       this.$store.commit('SET_PROJECTS', updatedProjects);
     },
