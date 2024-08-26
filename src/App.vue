@@ -2,27 +2,38 @@
 <template>
 <v-app>
     <!-- Header de la aplicación -->
-    <HeaderComponent />
-    <!-- Home de la aplicación -->
-    <HomeView />
+    <HeaderComponent 
+      @search-query="updateSearchQuery" />
+    <HomeView/>
 
     <!-- Proyectos -->
-    <ProjectListView />
+    <ProjectListView 
+      :search-query="searchQuery" />
   </v-app>
 </template>
 
 <script>
 // Importar el componente HeaderComponent
 import HeaderComponent from './components/HeaderComponent.vue'
-import HomeView from './views/HomeView.vue'
 import ProjectListView from './views/ProjectListView.vue'
-
+import HomeView from './views/HomeView.vue'
 export default {
   components: {
     HeaderComponent,
-    HomeView,
     ProjectListView,
+    HomeView
+    
   },
+  data() {
+    return {
+      searchQuery: '', // Inicialmente vacío
+    };
+  },
+  methods: {
+    updateSearchQuery(query) {
+      this.searchQuery = query; // Actualizar el término de búsqueda
+    }
+  }
 }
 </script>
 
