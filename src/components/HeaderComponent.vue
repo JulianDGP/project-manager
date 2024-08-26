@@ -13,7 +13,8 @@
             color="white"
             hide-details
             dense
-            clearable 
+            clearable
+            @keydown.enter="applySearch" 
           ></v-text-field>
         </v-col>
         

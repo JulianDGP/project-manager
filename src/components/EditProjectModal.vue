@@ -62,7 +62,7 @@
         this.dialog = false;
       },
       saveProject() {
-        this.$emit('project-saved', { ...this.localProject });
+        this.$emit('project-saved', { ...this.localProject }); // Emitir un evento para que el componente padre lo maneje
         this.close();
       }
     }

@@ -13,13 +13,9 @@
 
     <!-- Selector de estado para filtrar proyectos -->
     <v-col>
-    <v-select
-      v-model="selectedStatus"
-      :items="['Todos', 'Activo', 'Inactivo']"
-      label="Filtrar por estado"
-      dense
-    ></v-select>
-  </v-col>
+      <v-select v-model="selectedStatus" :items="['Todos', 'Activo', 'Inactivo']" label="Filtrar por estado"
+        dense></v-select>
+    </v-col>
     <!-- Mostrar mensaje si no hay proyectos -->
     <v-row v-if="projects.length === 0">
       <v-col>
@@ -43,10 +39,10 @@
       </v-col>
     </v-row>
     <!-- Modal Crear Proyecto -->
-    <CreateProjectModal ref="createProjectModal" @project-saved="addProject" />
+    <CreateProjectModal ref="createProjectModal" @project-saved="handleProjectSaved" />
     <!-- Modal Editar Proyecto -->
     <EditProjectModal ref="editProjectModal" v-if="selectedProject" :project="selectedProject"
-      @project-saved="updateProject" />
+      @project-saved="handleProjectUpdated" />
     <!-- Modal Detalles del Proyecto -->
     <ProjectDetailsModal ref="projectDetailsModal" v-if="selectedProject" :project="selectedProject" />
     <!-- Modal de Confirmación para Eliminar Proyecto -->
@@ -55,7 +51,7 @@
         <v-card-title>Confirmar Eliminación</v-card-title>
         <v-card-text>¿Estás seguro de que deseas eliminar este proyecto?</v-card-text>
         <v-card-actions>
-          <v-btn color="error" text @click="deleteProject">Eliminar</v-btn>
+          <v-btn color="error" text @click="handleDeleteProject">Eliminar</v-btn>
           <v-btn color="primary" text @click="closeDeleteDialog">Cancelar</v-btn>
         </v-card-actions>
       </v-card>
@@ -96,6 +92,7 @@
 import CreateProjectModal from '../components/CreateProjectModal.vue';
 import EditProjectModal from '../components/EditProjectModal.vue';
 import ProjectDetailsModal from '../components/ProjectDetailsModal.vue';
+import { mapState, mapActions } from 'vuex';
 
 export default {
   name: 'ProjectList',
@@ -110,74 +107,53 @@ export default {
   data() {
     return { // Lista de proyectos de ejemplo
       selectedStatus: 'Todos', // Estado seleccionado por el usuario
-      projects: [
-        {
-          id: 1,
-          name: 'Proyecto 1',
-          description: 'Lorem ipsum dolor sit amet...',
-          active: 'Activo',
-          tasks: [
-            { id: 1, name: 'Tarea 1.1', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula mauris nec augue elementum, nec scelerisque arcu fringilla.', status: 'Pendiente' },
-            { id: 2, name: 'Tarea 1.2', description: 'Descripción de la tarea 1.2', status: 'En Progreso' },
-          ]
-        },
-        {
-          id: 2,
-          name: 'Proyecto 2',
-          description: 'Vivamus euismod...',
-          active: 'Inactivo',
-          tasks: [
-            { id: 1, name: 'Tarea 2.1', description: 'Descripción de la tarea 2.1', status: 'Completada' }
-          ]
-        },
-      ],
       selectedProject: null, // Proyecto seleccionado para editar o ver detalles
       projectToDelete: null, // Proyecto seleccionado para eliminar
       deleteDialog: false, // Estado del modal de confirmación de eliminación
     };
   },
   computed: {
+    ...mapState(['projects']), // Obtener el estado de los proyectos desde Vuex
     foundedProjects() { // Filtrar proyectos basados en la consulta de búsqueda
       let filteredProjects = this.projects;
 
       if (this.searchQuery) {
         filteredProjects = filteredProjects.filter(project =>
-        project.name.toLowerCase().includes(this.searchQuery.toLowerCase())
-      );
-    }
-    if (this.selectedStatus !== 'Todos') {
-      filteredProjects = filteredProjects.filter(project =>
-        project.active === this.selectedStatus
-      );
-    }
+          project.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+        );
+      }
+      if (this.selectedStatus !== 'Todos') {
+        filteredProjects = filteredProjects.filter(project =>
+          project.active === this.selectedStatus
+        );
+      }
 
-    return filteredProjects;
+      return filteredProjects;
     }
   },
-  methods: { // Método para abrir el modal de creación de proyectos
+  methods: {
+    ...mapActions(['addProject', 'updateProject', 'deleteProject']),
+
+    // Método para abrir el modal de creación de proyectos
     openCreateProjectModal() {
       this.$refs.createProjectModal.open();
-    }, 
-    addProject(newProject) { // Método para agregar un nuevo proyecto a la lista
-      newProject.id = this.projects.length + 1; // Asignar un ID único al nuevo proyecto
-      newProject.tasks = []; // Asegurarse de que el nuevo proyecto tenga una lista de tareas vacía
-      this.projects.push(newProject);
+    },
+    // Este método se llama cuando se guarda un proyecto desde el modal
+    handleProjectSaved(newProject) {
+      this.addProject(newProject); // Llamar a la acción de Vuex para añadir un proyecto
     },
     openEditProjectModal(project) { // Método para abrir el modal de edición de proyectos
       this.selectedProject = { ...project }; // Clonar el proyecto seleccionado
       this.$nextTick(() => {
         if (this.$refs.editProjectModal) {
           this.$refs.editProjectModal.open();
-        }else {
+        } else {
           console.error("El modal de edición no está disponible.");
         }
       });
     },
-    updateProject(updatedProject) { // Método para actualizar un proyecto existente
-      const index = this.projects.findIndex(p => p.id === updatedProject.id);
-      if (index !== -1) {
-        this.projects[index] = updatedProject;
-      }
+    handleProjectUpdated(updatedProject) {
+      this.updateProject(updatedProject); // Llamar a la acción de Vuex para actualizar un proyecto
     },
     openDeleteDialog(project) { // Método para abrir el diálogo de confirmación de eliminación
       this.projectToDelete = project;
@@ -187,9 +163,9 @@ export default {
       this.projectToDelete = null;
       this.deleteDialog = false;
     },
-    deleteProject() {     // Método para eliminar un proyecto
+    handleDeleteProject() {
       if (this.projectToDelete) {
-        this.projects = this.projects.filter(p => p.id !== this.projectToDelete.id);
+        this.deleteProject(this.projectToDelete.id); // Llamar a la acción de Vuex para eliminar un proyecto
         this.closeDeleteDialog();
       }
     },
@@ -207,7 +183,8 @@ export default {
 
 <style scoped>
 .project-list-container {
-  max-width: 1200px; /* Ancho máximo del contenedor */
+  max-width: 1200px;
+  /* Ancho máximo del contenedor */
   padding-top: 24px;
 }
 

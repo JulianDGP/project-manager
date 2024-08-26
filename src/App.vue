@@ -32,8 +32,11 @@ export default {
   methods: {
     updateSearchQuery(query) {
       this.searchQuery = query; // Actualizar el término de búsqueda
-    }
-  }
+    },
+  },
+  created() {
+    this.$store.dispatch('loadProjects'); // Cargar proyectos desde localStorage cuando se crea el componente
+  },
 }
 </script>
 
