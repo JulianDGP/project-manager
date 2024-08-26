@@ -1,9 +1,9 @@
 <!-- src/views/HomeView.vue -->
 
 <template>
-    <div>
+    <!-- <div>
         <p>Bienvenidos a la aplicacion de gestion de proyectos</p>
-    </div>
+    </div> -->
 </template>
 
 <script>

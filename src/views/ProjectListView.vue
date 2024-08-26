@@ -1,18 +1,19 @@
 <!-- src/views/ProjectListView.vue -->
+
 <template>
   <v-container class="project-list-container" fluid>
-
     <!-- Botón Crear Proyecto -->
     <v-row class="mb-4">
       <v-col>
         <!-- Botón para abrir el modal de creación de proyectos -->
-        <v-btn color="primary" @click="openCreateProjectModal">
+        <v-btn color="primary" @click="openCreateProjectModal"  elevation="2" rounded>
+          <v-icon left>mdi-plus</v-icon>
           Crear Proyecto
         </v-btn>
       </v-col>
     </v-row>
 
-     <!-- Mostrar mensaje si no hay proyectos -->
+    <!-- Mostrar mensaje si no hay proyectos -->
     <v-row v-if="projects.length === 0">
       <v-col>
         <v-alert type="info" text>
@@ -24,23 +25,20 @@
       </v-col>
     </v-row>
 
-
     <!-- Mostrar mensaje si no se encuentran proyectos en la búsqueda -->
     <v-row v-else-if="foundedProjects.length === 0">
       <v-col>
-        <v-alert type="info" text>
-          Parece que no se encontraron proyectos que coincidan con tu búsqueda 🥲 ... Intenta buscar con otro nombre o crear un nuevo proyecto🤓☝️
+        <v-alert type="info" prominent elevation="2">
+          Parece que no se encontraron proyectos que coincidan con tu búsqueda 🥲 ... Intenta buscar con otro nombre o crear un nuevo proyecto 🤓☝️
         </v-alert>
       </v-col>
     </v-row>
 
     <!-- Modal Crear Proyecto -->
-    <!-- Se escucha el evento 'project-saved' y se ejecuta el método 'addProject' -->
     <CreateProjectModal ref="createProjectModal" @project-saved="addProject" />
 
     <!-- Modal Editar Proyecto -->
-    <CreateProjectModal ref="editProjectModal" v-if="selectedProject" :project="selectedProject"
-      @project-saved="updateProject" />
+    <CreateProjectModal ref="editProjectModal" v-if="selectedProject" :project="selectedProject" @project-saved="updateProject" />
 
     <!-- Modal Detalles del Proyecto -->
     <ProjectDetailsModal ref="projectDetailsModal" v-if="selectedProject" :project="selectedProject" />
@@ -48,38 +46,44 @@
     <!-- Modal de Confirmación para Eliminar Proyecto -->
     <v-dialog v-model="deleteDialog" max-width="500">
       <v-card>
-        <v-card-title class="headline">Confirmar Eliminación</v-card-title>
+        <v-card-title>Confirmar Eliminación</v-card-title>
         <v-card-text>¿Estás seguro de que deseas eliminar este proyecto?</v-card-text>
         <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="red darken-1" text @click="deleteProject">Eliminar</v-btn>
-          <v-btn color="blue darken-1" text @click="closeDeleteDialog">Cancelar</v-btn>
+          <v-btn color="error" text @click="deleteProject">Eliminar</v-btn>
+          <v-btn color="primary" text @click="closeDeleteDialog">Cancelar</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
     <!-- Lista de proyectos -->
-    <v-row v-for="project in foundedProjects" :key="project.id">
-      <v-col>
-        <v-card @click="openProjectDetails(project)" elevation="5">
-          <!-- Título del proyecto -->
-          <v-card-title>{{ project.name }}</v-card-title>
-          <!-- Subtítulo mostrando el estado del proyecto -->
-          <v-card-subtitle :class="project.active === 'Activo' ? 'status-activo' : 'status-inactivo'">
-            {{ project.active }}
-          </v-card-subtitle>
+    <v-row>
+      <!-- Utilizamos v-col con cols="12" sm="6" para asegurar máximo 2 columnas -->
+      <v-col cols="12" sm="6" v-for="project in foundedProjects" :key="project.id">
+        <v-card @click="openProjectDetails(project)" elevation="2" hover class="project-card transition-swing mb-4">
+          <!-- Título del proyecto y chip de estado -->
+          <v-card-title class="d-flex justify-space-between">
+            <span>{{ project.name }}</span>
+            <v-chip
+              :color="project.active === 'Activo' ? 'success' : 'error'">
+              {{ project.active }}
+            </v-chip>
+          </v-card-title>
+          
           <!-- Descripción del proyecto -->
-          <v-card-text>
+          <v-card-text >
             {{ project.description }}
           </v-card-text>
-          <!-- Botón de edición -->
-          <v-btn icon @click.stop="openEditProjectModal(project)">
-            <v-icon>mdi-pencil</v-icon>
-          </v-btn>
-          <!-- Botón de eliminación -->
-          <v-btn icon @click.stop="openDeleteDialog(project)">
-            <v-icon color="red">mdi-delete</v-icon>
-          </v-btn>
+          
+          <!-- Botones de acción -->
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn icon @click.stop="openEditProjectModal(project)">
+              <v-icon>mdi-pencil</v-icon>
+            </v-btn>
+            <v-btn icon @click.stop="openDeleteDialog(project)">
+              <v-icon color="error">mdi-delete</v-icon>
+            </v-btn>
+          </v-card-actions>
         </v-card>
       </v-col>
     </v-row>
@@ -87,7 +91,7 @@
 </template>
 
 <script>
-// Importar modal de crear proyecto y modal detalles del proyecto
+// Importar componentes necesarios
 import CreateProjectModal from '../components/CreateProjectModal.vue';
 import ProjectDetailsModal from '../components/ProjectDetailsModal.vue';
 
@@ -98,48 +102,40 @@ export default {
     ProjectDetailsModal
   },
   props: {
-    searchQuery: String,
+    searchQuery: String, // Prop para recibir la consulta de búsqueda
   },
   data() {
     return {
-
-      // Lista de proyectos de ejemplo 
+      // Lista de proyectos de ejemplo
       projects: [
         {
-          id: 1, name: 'Proyecto 1', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula mauris nec augue elementum, nec scelerisque arcu fringilla. Vivamus euismod, metus at fermentum vehicula, urna justo lobortis est, in volutpat neque nunc vel nisi. Donec non urna ut erat malesuada dictum non non nisi.', active: 'Activo', tasks: [
+          id: 1,
+          name: 'Proyecto 1',
+          description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula mauris nec augue elementum, nec scelerisque arcu fringilla.',
+          active: 'Activo',
+          tasks: [
             { id: 1, name: 'Tarea 1.1', description: 'Descripción de la tarea 1.1', status: 'Pendiente' },
             { id: 2, name: 'Tarea 1.2', description: 'Descripción de la tarea 1.2', status: 'En Progreso' },
-            { id: 3, name: 'Tarea 1.3', description: 'Descripción de la tarea 1.3', status: 'En Progreso' },
-            { id: 4, name: 'Tarea 1.4', description: 'Descripción de la tarea 1.4', status: 'En Progreso' },
-            { id: 5, name: 'Tarea 1.5', description: 'Descripción de la tarea 1.5', status: 'En Progreso' }
           ]
         },
         {
-          id: 2, name: 'Proyecto 2', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula mauris nec augue elementum, nec scelerisque arcu fringilla. Vivamus euismod, metus at fermentum vehicula, urna justo lobortis est, in volutpat neque nunc vel nisi. Donec non urna ut erat malesuada dictum non non nisi.', active: 'Inactivo', tasks: [
+          id: 2,
+          name: 'Proyecto 2',
+          description: 'Vivamus euismod, metus at fermentum vehicula, urna justo lobortis est, in volutpat neque nunc vel nisi.',
+          active: 'Inactivo',
+          tasks: [
             { id: 1, name: 'Tarea 2.1', description: 'Descripción de la tarea 2.1', status: 'Completada' }
           ]
         },
-        { id: 3, name: 'Proyecto 3', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula mauris nec augue elementum, nec scelerisque arcu fringilla. Vivamus euismod, metus at fermentum vehicula, urna justo lobortis est, in volutpat neque nunc vel nisi. Donec non urna ut erat malesuada dictum non non nisi.', active: 'Activo', tasks: [] },
-        {
-          id: 4, name: 'Proyecto 4', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula mauris nec augue elementum, nec scelerisque arcu fringilla. Vivamus euismod, metus at fermentum vehicula, urna justo lobortis est, in volutpat neque nunc vel nisi. Donec non urna ut erat malesuada dictum non non nisi.', active: 'Inactivo', tasks: [
-            { id: 1, name: 'Tarea 4.1', description: 'Descripción de la tarea 4.1', status: 'Completada' }
-          ]
-        },
-
-        {
-          id: 5, name: 'Proyecto 5', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula mauris nec augue elementum, nec scelerisque arcu fringilla. Vivamus euismod, metus at fermentum vehicula, urna justo lobortis est, in volutpat neque nunc vel nisi. Donec non urna ut erat malesuada dictum non non nisi.', active: 'Activo', tasks: [
-            { id: 1, name: 'Tarea 5.1', description: 'Descripción de la tarea 5.1', status: 'Completada' }
-          ]
-        },
       ],
-      selectedProject: {}, // Proyecto seleccionado para editar
+      selectedProject: {}, // Proyecto seleccionado para editar o ver detalles
       projectToDelete: null, // Proyecto seleccionado para eliminar
       deleteDialog: false, // Estado del modal de confirmación de eliminación
     };
   },
   computed: {
+    // Filtrar proyectos basados en la consulta de búsqueda
     foundedProjects() {
-      // Filtrar proyectos por nombre
       if (this.searchQuery) {
         return this.projects.filter(project =>
           project.name.toLowerCase().includes(this.searchQuery.toLowerCase())
@@ -150,18 +146,20 @@ export default {
     }
   },
   methods: {
-    openCreateProjectModal() {// Método para abrir el modal de creación de proyectos
+    // Método para abrir el modal de creación de proyectos
+    openCreateProjectModal() {
       this.$refs.createProjectModal.open();
     },
-    addProject(newProject) {// Método para agregar un nuevo proyecto a la lista
-      newProject.id = this.projects.length + 1;// Asignar un ID único al nuevo proyecto
+    // Método para agregar un nuevo proyecto a la lista
+    addProject(newProject) {
+      newProject.id = this.projects.length + 1; // Asignar un ID único al nuevo proyecto
       newProject.tasks = []; // Asegurarse de que el nuevo proyecto tenga una lista de tareas vacía
       this.projects.push(newProject); // Añadir el nuevo proyecto a la lista de proyectos
-      console.log('Nuevo proyecto añadido:', newProject);// Imprimir en consola para verificar
+      console.log('Nuevo proyecto añadido:', newProject);
     },
+    // Método para abrir el modal de edición de proyectos
     openEditProjectModal(project) {
       this.selectedProject = { ...project }; // Clonar el proyecto seleccionado
-      // asegurarse de que el ref `editProjectModal` esté definido antes de intentar abrir el modal
       this.$nextTick(() => {
         if (this.$refs.editProjectModal) {
           this.$refs.editProjectModal.open();
@@ -170,6 +168,7 @@ export default {
         }
       });
     },
+    // Método para actualizar un proyecto existente
     updateProject(updatedProject) {
       const index = this.projects.findIndex(p => p.id === updatedProject.id);
       if (index !== -1) {
@@ -177,14 +176,17 @@ export default {
       }
       console.log('Proyecto actualizado:', updatedProject);
     },
+    // Método para abrir el diálogo de confirmación de eliminación
     openDeleteDialog(project) {
       this.projectToDelete = project;
       this.deleteDialog = true;
     },
+    // Método para cerrar el diálogo de confirmación de eliminación
     closeDeleteDialog() {
       this.projectToDelete = null;
       this.deleteDialog = false;
     },
+    // Método para eliminar un proyecto
     deleteProject() {
       if (this.projectToDelete) {
         this.projects = this.projects.filter(p => p.id !== this.projectToDelete.id);
@@ -192,6 +194,7 @@ export default {
         this.closeDeleteDialog();
       }
     },
+    // Método para abrir el modal de detalles del proyecto
     openProjectDetails(project) {
       this.selectedProject = { ...project };
       this.$nextTick(() => {
@@ -205,24 +208,26 @@ export default {
 </script>
 
 <style scoped>
-/* Estilos específicos para ProjectList */
 .project-list-container {
-  max-width: 80%;
-  /* Ancho máximo del contenedor */
-  overflow-y: auto;
-  /* Activa el scroll vertical */
-  padding-top: 16px;
-  /* Espaciado para los elementos */
+  max-width: 1200px; /* Ancho máximo del contenedor */
+  padding-top: 24px;
 }
 
-/* Estilos para los estados */
-.status-activo {
-  color: green;
-  /* verde para activo */
+.project-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-.status-inactivo {
-  color: red;
-  /* Rojo para inactivo */
+.v-card__actions {
+  justify-content: flex-end;
+}
+
+.transition-swing {
+  transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
+}
+
+.v-card:hover {
+  transform: translateY(-5px);
 }
 </style>
