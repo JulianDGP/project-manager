@@ -5,7 +5,7 @@
   <v-dialog v-model="dialog" max-width="800">
     <v-card>
       <v-card-title class="text-h4 pa-6 d-flex justify-space-between align-center">
-        <span>{{ project.name }}</span>
+        <span>{{ localProject.name }}</span>
         <v-btn icon @click="close">
           <v-icon>mdi-close</v-icon>
         </v-btn>
@@ -15,16 +15,16 @@
           <v-row>
             <v-col>
               <h3 class="text-h6 mb-2">Descripción</h3>
-              <p>{{ project.description }}</p>
+              <p>{{ localProject.description }}</p>
             </v-col>
             <v-col>
               <h3 class="text-h6 mb-2">Estado</h3>
-              <v-chip :color="project.active ? 'success' : 'error'" text-color="white">
-                {{ project.active ? 'Activo' : 'Inactivo' }}
+              <v-chip :color="localProject.active ? 'success' : 'error'" text-color="white">
+                {{ localProject.active ? 'Activo' : 'Inactivo' }}
               </v-chip>
             </v-col>
           </v-row>
-          <v-row v-if="project.tasks && project.tasks.length">
+          <v-row v-if="localProject.tasks && localProject.tasks.length">
             <v-col>
               <h3 class="text-h6 mb-2">Estadísticas de Tareas</h3>
               <v-row>
@@ -47,11 +47,11 @@
           </v-row>
 
           <!-- lista de las tareas del proyecto -->
-          <v-row v-if="project.tasks && project.tasks.length">
+          <v-row v-if="localProject.tasks && localProject.tasks.length">
             <v-col cols="12">
               <h3 class="text-h6 mb-2">Tareas del Proyecto</h3>
               <v-row>
-                <v-col cols="12" sm="6" md="4" v-for="task in project.tasks" :key="task.id">
+                <v-col cols="12" sm="6" md="4" v-for="task in localProject.tasks" :key="task.id">
                   <v-card hover class="task-card">
                     <v-card-title class="text-h6">{{ task.name }}</v-card-title>
                     <v-card-subtitle>
@@ -114,6 +114,7 @@ export default {
       dialog: false,
       deleteTaskDialog: false, // Estado del modal de confirmación de eliminación de tarea
       taskToDelete: null, // Tarea seleccionada para eliminar
+      localProject: {} // Inicializa la propiedad local para almacenar una copia del proyecto
     };
   },
   components: {
@@ -126,8 +127,8 @@ export default {
         'En Progreso': 0,
         Completadas: 0
       };
-      if (this.project.tasks) {
-        this.project.tasks.forEach(task => {
+      if (this.localProject.tasks) {
+        this.localProject.tasks.forEach(task => {
           if (task.status === 'Pendiente') stats.Pendientes++;
           if (task.status === 'En Progreso') stats['En Progreso']++;
           if (task.status === 'Completada') stats.Completadas++;
@@ -138,6 +139,10 @@ export default {
   },
   methods: {
     open() {
+      const projectFromStore = this.$store.state.projects.find(p => p.id === this.project.id);
+      if (projectFromStore) {
+        this.localProject = { ...projectFromStore };
+      }
       this.dialog = true;
     },
     close() {
@@ -149,11 +154,12 @@ export default {
       }
     },
     addTask(newTask) {
-      if (!this.project.tasks) {
-        this.project.tasks = [];
+      if (!this.localProject.tasks) {
+        this.localProject.tasks = [];
       }
-      newTask.id = this.project.tasks.length + 1;
-      this.project.tasks.push(newTask);
+      newTask.id = this.localProject.tasks.length + 1;
+      this.localProject.tasks.push(newTask);
+      this.updateProjectInLocalStorage(); // Guardar las tareas junto con el proyecto
     },
 
     // Método para abrir el modal de confirmación de eliminación de tarea
@@ -171,22 +177,24 @@ export default {
     // Método para eliminar la tarea seleccionada
     handleDeleteTask() {
       if (this.taskToDelete) {
-        this.project.tasks = this.project.tasks.filter(task => task.id !== this.taskToDelete.id);
+        this.localProject.tasks = this.localProject.tasks.filter(task => task.id !== this.taskToDelete.id);
         this.updateProjectInLocalStorage();
         this.closeDeleteTaskDialog();
       }
     },
-
     // Método para actualizar el proyecto en localStorage
     updateProjectInLocalStorage() {
       const projects = JSON.parse(localStorage.getItem('projects')) || [];
       const updatedProjects = projects.map(project => {
-        if (project.id === this.project.id) {
-          return { ...project, tasks: this.project.tasks };
+        if (project.id === this.localProject.id) {
+          return { ...this.localProject}; // Actualiza las tareas del proyecto
         }
         return project;
       });
-      localStorage.setItem('projects', JSON.stringify(updatedProjects));
+      localStorage.setItem('projects', JSON.stringify(updatedProjects)); // Guarda la nueva lista de proyectos en localStorage
+
+      // Actualiza también el store para que esté sincronizado
+      this.$store.commit('SET_PROJECTS', updatedProjects);
     },
     getStatusColor(status) {
       switch (status) {
