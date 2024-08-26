@@ -9,12 +9,12 @@
         <v-col cols="10" offset="1"> 
           <v-text-field
             v-model="searchQuery"
-            label="Buscar proyectos"
+            label="Buscar proyectos por nombre"
             color="white"
             hide-details
             dense
             clearable
-            @keydown.enter="applySearch" 
+            @keydown.enter="applySearch"
           ></v-text-field>
         </v-col>
         
