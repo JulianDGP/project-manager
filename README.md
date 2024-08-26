@@ -34,8 +34,8 @@ Este proyecto es una aplicación de gestión de proyectos que permite a los usua
 1. **Clonar el repositorio:**
 
    ```bash
-   git clone https://github.com/tu-usuario/nombre-del-repositorio.git
-   cd nombre-del-repositorio
+   git clone https://github.com/JulianDGP/project-manager.git
+   cd project-manager
 2. **Instalar las dependencias:**
 
    ```bash
