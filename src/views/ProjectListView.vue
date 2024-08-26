@@ -70,7 +70,7 @@
             </v-chip>
           </v-card-title>
           <!-- Descripción del proyecto -->
-          <v-card-text>{{ project.description }}</v-card-text>
+          <v-card-text class="text-left">{{ project.description }}</v-card-text>
           <!-- Botones de acción -->
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -196,7 +196,9 @@ export default {
   display: flex;
   flex-direction: column;
 }
-
+.text-left {
+  text-align: left;
+}
 .v-card__actions {
   justify-content: flex-end;
 }
