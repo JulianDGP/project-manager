@@ -143,6 +143,7 @@ export default {
 
 <style scoped>
 .task-card {
+  height: 100%;
   transition: all 0.3s ease;
 }
 
