@@ -170,7 +170,10 @@ export default {
       }
     },
     openProjectDetails(project) { // Método para abrir el modal de detalles del proyecto
-      this.selectedProject = { ...project };
+      const projectFromStore = this.projects.find(p => p.id === project.id);
+      if (projectFromStore) {
+        this.selectedProject = { ...projectFromStore }; // Asegurarse de que el proyecto esté actualizado desde el store
+      }
       this.$nextTick(() => {
         if (this.$refs.projectDetailsModal) {
           this.$refs.projectDetailsModal.open();
