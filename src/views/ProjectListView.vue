@@ -219,6 +219,9 @@ export default {
   font-size: 1rem;
   flex: 1;
   margin-right: 8px;
+  white-space: nowrap;      /* Evita que el texto se divida en varias líneas */
+  overflow: hidden;         /* Oculta el texto que no cabe en el contenedor */
+  text-overflow: ellipsis;  /* Añade los puntos suspensivos (...) al final del texto truncado */
 }
 
 .status-chip {

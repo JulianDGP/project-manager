@@ -5,7 +5,7 @@
   <v-dialog v-model="dialog" max-width="800">
     <v-card>
       <v-card-title class="text-h4 pa-6 d-flex justify-space-between align-center">
-        <span>{{ localProject.name }}</span>
+        <span class="project-title">{{ localProject.name }}</span>
         <v-btn icon @click="close">
           <v-icon>mdi-close</v-icon>
         </v-btn>
@@ -244,4 +244,11 @@ export default {
   transform: translateY(-5px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
+.project-title {
+  white-space: normal; /* Permite que el texto se envuelva en varias líneas */
+  word-break: break-word; /* Fuerza el corte de palabras largas si no caben en una línea */
+  overflow-wrap: break-word; /* Asegura que las palabras largas se rompan en varias líneas */
+}
+
 </style>
