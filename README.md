@@ -1,5 +1,5 @@
 # 🚀 **Gestión de Proyectos y Tareas**
-
+Link de la página: https://juliandgp.github.io/project-manager/ 
 Este proyecto es una aplicación de gestión de proyectos que permite a los usuarios crear, editar y eliminar proyectos y sus respectivas tareas. Cada proyecto puede tener múltiples tareas asociadas, las cuales pueden ser gestionadas individualmente. La aplicación está construida con **Vue.js**, **Vuetify**, y **Vite** para una interfaz moderna, rápida y responsiva.
 
 ## ✨ **Características**
