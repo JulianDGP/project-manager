@@ -14,6 +14,7 @@
             hide-details
             dense
             clearable
+            rounded
             @keydown.enter="applySearch"
           ></v-text-field>
         </v-col>
