@@ -1,6 +1,6 @@
 <!-- src/views/ProjectListView.vue -->
 <template>
-  <v-container class="project-list-container" fluid>
+  <v-container class="project-list-container" fluid >
     <!-- Botón Crear Proyecto -->
     <v-row class="mb-4">
       <v-col>
@@ -19,7 +19,7 @@
     <!-- Mostrar mensaje si no hay proyectos -->
     <v-row v-if="projects.length === 0">
       <v-col>
-        <v-alert type="info" text>
+        <v-alert prominent border="start" closable type="info" elevation="2" text>
           ¡Vaya! Aún no tienes ningún proyecto creado ☹️. Puedes comenzar a crear uno haciendo clic en el botón 'Crear
           Proyecto'. Tus proyectos se guardarán en tu navegador, así que, aunque recargues la página o cierres y vuelvas
           a abrir el navegador, tus proyectos y sus tareas seguirán aquí... a menos que borres la caché o uses un
@@ -32,9 +32,9 @@
     <!-- Mostrar mensaje si no se encuentran proyectos en la búsqueda -->
     <v-row v-else-if="foundedProjects.length === 0">
       <v-col>
-        <v-alert type="info" prominent elevation="2">
+        <v-alert  prominent border="start" closable type="info" elevation="2" text>
           Parece que no se encontraron proyectos que coincidan con tu búsqueda 🥲 ... Intenta buscar con otro nombre o
-          crear un nuevo proyecto 🤓☝️
+          crear un nuevo proyecto 🤓
         </v-alert>
       </v-col>
     </v-row>
@@ -186,6 +186,8 @@ export default {
 </script>
 
 <style scoped>
+
+
 .project-list-container {
   max-width: 1200px;
   /* Ancho máximo del contenedor */
