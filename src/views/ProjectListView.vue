@@ -63,12 +63,13 @@
       <v-col cols="12" sm="6" v-for="project in foundedProjects" :key="project.id">
         <v-card @click="openProjectDetails(project)" elevation="2" hover class="project-card transition-swing mb-4">
           <!-- Título del proyecto y chip de estado -->
-          <v-card-title class="d-flex justify-space-between">
-            <span>{{ project.name }}</span>
-            <v-chip :color="project.active === 'Activo' ? 'success' : 'error'">
+          <v-card-title class="d-flex justify-space-between align-center flex-wrap">
+            <span class="project-title">{{ project.name }}</span>
+            <v-chip class="status-chip" :color="project.active === 'Activo' ? 'success' : 'error'">
               {{ project.active }}
             </v-chip>
           </v-card-title>
+
           <!-- Descripción del proyecto -->
           <v-card-text class="text-left">{{ project.description }}</v-card-text>
           <!-- Botones de acción -->
@@ -196,9 +197,11 @@ export default {
   display: flex;
   flex-direction: column;
 }
+
 .text-left {
   text-align: left;
 }
+
 .v-card__actions {
   justify-content: flex-end;
 }
@@ -209,5 +212,27 @@ export default {
 
 .v-card:hover {
   transform: translateY(-5px);
+}
+
+.project-title {
+  text-align: left;
+  font-size: 1rem;
+  flex: 1;
+  margin-right: 8px;
+}
+
+.status-chip {
+  font-size: 0.875rem;
+  padding: 0 4px;
+}
+
+@media (max-width: 600px) {
+  .status-chip {
+    font-size: 0.75rem;
+    padding: 0 2px;
+  }
+  .project-title {
+    font-size: 0.875rem;
+  }
 }
 </style>
