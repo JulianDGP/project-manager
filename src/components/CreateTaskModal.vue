@@ -14,35 +14,22 @@
           <v-row>
             <!-- Campo de texto para el nombre de la tarea -->
             <v-col cols="12">
-              <v-text-field 
-                label="Nombre de la Tarea" 
-                v-model="task.name"
-                :rules="[v => !!v || 'El nombre de la tarea es obligatorio']"
-                :error-messages="nameErrors"
-                @blur="validateName"
-                required
-              ></v-text-field>
+              <v-text-field label="Nombre de la Tarea" v-model="task.name"
+                :rules="[v => !!v || 'El nombre de la tarea es obligatorio']" :error-messages="nameErrors"
+                @blur="validateName" required></v-text-field>
             </v-col>
 
             <!-- Campo de texto para la descripción de la tarea -->
             <v-col cols="12">
-              <v-textarea 
-                label="Descripción" 
-                v-model="task.description"
-                :rules="[v => !!v || 'La descripción es obligatoria']"
-                :error-messages="descriptionErrors"
-                @blur="validateDescription"
-                required
-              ></v-textarea>
+              <v-textarea label="Descripción" v-model="task.description"
+                :rules="[v => !!v || 'La descripción es obligatoria']" :error-messages="descriptionErrors"
+                @blur="validateDescription" required></v-textarea>
             </v-col>
 
             <!-- Selección para el estado de la tarea -->
             <v-col cols="12">
-              <v-select 
-                :items="['Pendiente', 'En Progreso', 'Completada']" 
-                label="Estado"
-                v-model="task.status"
-              ></v-select>
+              <v-select :items="['Pendiente', 'En Progreso', 'Completada']" label="Estado"
+                v-model="task.status"></v-select>
             </v-col>
           </v-row>
         </v-container>
@@ -77,6 +64,7 @@ export default {
   methods: {
     // Método para abrir el modal
     open() {
+      this.resetForm(); // Reinicia el formulario antes de abrir el modal
       this.dialog = true;
     },
     // Método para cerrar el modal
@@ -120,6 +108,10 @@ export default {
     clearErrors() {
       this.nameErrors = [];
       this.descriptionErrors = [];
+    },
+    // Método para reiniciar el formulario
+    resetForm() {
+      this.task = { name: '', description: '', status: 'Pendiente' };
     }
   }
 }

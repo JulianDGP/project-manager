@@ -71,6 +71,7 @@ export default {
   methods: {
     // Método para abrir el modal
     open() {
+      this.resetForm(); // Reinicia el formulario antes de abrir el modal
       this.dialog = true;
     },
     // Método para cerrar el modal
@@ -114,6 +115,9 @@ export default {
     clearErrors() {
       this.nameErrors = [];
       this.descriptionErrors = [];
+    },
+    resetForm() {
+      this.localProject = { name: '', description: '', active: 'Activo' };
     }
   }
 };
