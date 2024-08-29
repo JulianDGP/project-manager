@@ -19,9 +19,9 @@
             </v-col>
             <v-col>
               <h3 class="text-h6 mb-2">Estado</h3>
-              <v-chip :color="localProject.active ? 'success' : 'error'" text-color="white">
-                {{ localProject.active ? 'Activo' : 'Inactivo' }}
-              </v-chip>
+              <v-chip class="status-chip" :color="localProject.active === 'Activo' ? 'success' : 'error'">
+              {{ localProject.active }}
+            </v-chip>
             </v-col>
           </v-row>
           <v-row v-if="localProject.tasks && localProject.tasks.length">
@@ -249,6 +249,21 @@ export default {
   white-space: normal; /* Permite que el texto se envuelva en varias líneas */
   word-break: break-word; /* Fuerza el corte de palabras largas si no caben en una línea */
   overflow-wrap: break-word; /* Asegura que las palabras largas se rompan en varias líneas */
+}
+
+.status-chip {
+  font-size: 0.875rem;
+  padding: 0 4px;
+}
+
+@media (max-width: 600px) {
+  .status-chip {
+    font-size: 0.75rem;
+    padding: 0 2px;
+  }
+  .project-title {
+    font-size: 0.875rem;
+  }
 }
 
 </style>
