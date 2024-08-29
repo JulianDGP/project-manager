@@ -1,6 +1,6 @@
 <!-- src/views/ProjectListView.vue -->
 <template>
-  <v-container class="project-list-container" fluid >
+  <v-container class="project-list-container" fluid>
     <!-- Botón Crear Proyecto -->
     <v-row class="mb-4">
       <v-col>
@@ -32,7 +32,7 @@
     <!-- Mostrar mensaje si no se encuentran proyectos en la búsqueda -->
     <v-row v-else-if="foundedProjects.length === 0">
       <v-col>
-        <v-alert  prominent border="start" closable type="info" elevation="2" text>
+        <v-alert prominent border="start" closable type="info" elevation="2" text>
           Parece que no se encontraron proyectos que coincidan con tu búsqueda 🥲 ... Intenta buscar con otro nombre o
           crear un nuevo proyecto 🤓
         </v-alert>
@@ -186,8 +186,6 @@ export default {
 </script>
 
 <style scoped>
-
-
 .project-list-container {
   max-width: 1200px;
   /* Ancho máximo del contenedor */
@@ -195,13 +193,16 @@ export default {
 }
 
 .project-card {
-  height: auto; /* Ajusta la altura automáticamente según el contenido */
+  height: 100%;
+  /* Ajusta la altura automáticamente según el contenido */
   display: flex;
   flex-direction: column;
 }
 
 .v-card-text {
-  padding:0;
+  padding: 0;
+  margin-left: 15px;
+  margin-right: 15px;
 }
 
 .text-left {
@@ -225,19 +226,20 @@ export default {
   font-size: 1rem;
   flex: 1;
   margin-right: 8px;
-  white-space: nowrap;      /* Evita que el texto se divida en varias líneas */
-  overflow: hidden;         /* Oculta el texto que no cabe en el contenedor */
-  text-overflow: ellipsis;  /* Añade los puntos suspensivos (...) al final del texto truncado */
+  white-space: nowrap;
+  /* Evita que el texto se divida en varias líneas */
+  overflow: hidden;
+  /* Oculta el texto que no cabe en el contenedor */
+  text-overflow: ellipsis;
+  /* Añade los puntos suspensivos (...) al final del texto truncado */
 }
 
 .truncate-text {
+  /* Número de líneas a mostrar */
   display: -webkit-box;
-  -webkit-box-orient: vertical;
+  -webkit-box-orient: vertical;  
   overflow: hidden;
-  text-overflow: ellipsis;
-
-  -webkit-line-clamp: 3;  /* Ajusta este valor según tus necesidades */
-  line-clamp: 3;          /* Asegúrate de que coincida con el anterior */
+  line-clamp: 3;
 }
 
 
@@ -251,6 +253,7 @@ export default {
     font-size: 0.75rem;
     padding: 0 2px;
   }
+
   .project-title {
     font-size: 0.875rem;
   }
