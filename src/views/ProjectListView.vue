@@ -71,7 +71,7 @@
           </v-card-title>
 
           <!-- Descripción del proyecto -->
-          <v-card-text class="text-left">{{ project.description }}</v-card-text>
+          <v-card-text class="text-left truncate-text">{{ project.description }}</v-card-text>
           <!-- Botones de acción -->
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -195,9 +195,13 @@ export default {
 }
 
 .project-card {
-  height: 100%;
+  height: auto; /* Ajusta la altura automáticamente según el contenido */
   display: flex;
   flex-direction: column;
+}
+
+.v-card-text {
+  padding:0;
 }
 
 .text-left {
@@ -225,6 +229,17 @@ export default {
   overflow: hidden;         /* Oculta el texto que no cabe en el contenedor */
   text-overflow: ellipsis;  /* Añade los puntos suspensivos (...) al final del texto truncado */
 }
+
+.truncate-text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  -webkit-line-clamp: 3;  /* Ajusta este valor según tus necesidades */
+  line-clamp: 3;          /* Asegúrate de que coincida con el anterior */
+}
+
 
 .status-chip {
   font-size: 0.875rem;
